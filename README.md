@@ -34,15 +34,19 @@ Assembling the hardware:
 
 ### Prerequisites
 
-- Install [Raspbian](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) on the Raspberry Pi.
-- Install Node.js and Express on the Raspberry Pi
+- Install [Raspbian](http://raspbian.org/) on the Raspberry Pi. Use [NOOBS](https://www.raspberrypi.org/documentation/installation/noobs.md) for an easy install process.
+- Install [Node.js](https://nodejs.org) on the Raspberry Pi:
+    ```sh
+    $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    $ sudo apt-get install -y nodejs
+    ```
 
 ### Installing
 
-Login to your Raspberry Pi and clone the repository:
+On your Raspberry Pi, clone the PumpkinPi repository:
 
 ```sh
-$ git clone https://github.com/matthewjustice/pumpkinpi/
+$ git clone https://github.com/matthewjustice/pumpkinpi.git
 ```
 
 Change directories
