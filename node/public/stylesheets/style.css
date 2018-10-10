@@ -1,0 +1,75 @@
+﻿body {
+    margin: 0px;
+}
+
+#jack-container {
+    position: relative;
+}
+
+.checkbox-pumpkin {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    z-index:-1000px;
+    left:-1000px;
+}
+
+#led1-label {
+    position: absolute;
+    top: 140px;
+    left: 86px;
+}
+
+#led2-label {
+    position: absolute;
+    top: 140px;
+    left: 208px;
+}
+
+.label-pumpkin {
+    background-image:url(/images/dark-red-circle-24px.png);
+    padding-left:24px;
+    height:24px; 
+    display:inline-block;
+    line-height:24px;
+    background-repeat:no-repeat;
+    font-size:24px;
+    vertical-align:middle;
+    cursor:pointer;
+}
+
+input[type=checkbox].checkbox-pumpkin:checked + label.label-pumpkin {
+    background-image:url(/images/red-circle-24px.png);
+}
+
+h1 {
+    font-size: 18pt;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 16pt;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+#motion-sensor-checkbox {
+    width: 24px;
+    height: 24px;;
+}
+
+#motion-sensor-label {
+    font-size: 16pt;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+option {
+    font-size: 16pt;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+    font-size: 16pt;
+    font-family: Arial, Helvetica, sans-serif;
+}

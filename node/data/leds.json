@@ -1,0 +1,10 @@
+﻿{
+  "led1": {
+    "name": "LED 1",
+    "status": "off"
+  },
+  "led2": {
+    "name": "LED 2",
+    "status": "off"
+  }
+}

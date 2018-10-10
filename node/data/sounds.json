@@ -1,0 +1,14 @@
+{
+    "hello.wav": {
+      "title": "Hello"
+    },
+    "happy.wav": {
+      "title": "Happy Halloween!"
+    },
+    "who.wav": {
+      "title": "Who goes there?"
+    },
+    "candy.wav": {
+      "title": "Take some candy."
+    }
+}

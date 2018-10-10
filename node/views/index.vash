@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>PumpkinPi</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/pumpkinpi.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+</head>
+<body>
+
+    <div id="jack-container">
+        <img src="images/jack.png">
+        <input type="checkbox" id="led1-checkbox" class="checkbox-pumpkin"><label for="led1-checkbox" class="label-pumpkin" id="led1-label"></label>
+        <input type="checkbox" id="led2-checkbox" class="checkbox-pumpkin"><label for="led2-checkbox" class="label-pumpkin" id="led2-label"></label>
+    </div>
+
+    <h2>Play a sound</h2>
+    <div>
+        <select id="sounds-select" size="4"></select>
+        <button id="play-button">Play</button>
+    </div>
+
+    <h2>Options</h2>
+    <div>
+        <label id="motion-sensor-label"><input type="checkbox" id="motion-sensor-checkbox"> Enable motion sensor</label>
+    </div>
+
+</body>
+</html>
