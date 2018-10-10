@@ -67,7 +67,7 @@ At this point the application should be running on the Raspberry Pi on port 5000
 
 ## API Documentation
 
-This project makes its functionality available with a web UI and a web API. If you would prefer to use the API directly rather than use the built-in UI, see the [API documentation](docs/api.md) for details.
+This project makes its functionality available with a web UI and a web API. If you would prefer to use the API directly rather than use the built-in UI, see the [API documentation](docs/API.md) for details.
 
 ## Built With
 
