@@ -39,7 +39,7 @@ function fileNameToPhoto(filename, photosDirectory) {
 }
 
 // Wrapper for fileNameToPhoto with done callback
-function tryFileToPhoto(filename, photosDirectory, done) {
+function tryFileToPhoto(filename, photosDirectory, capture, done) {
     try
     {
         let photo = fileNameToPhoto(filename, photosDirectory);
@@ -54,7 +54,10 @@ function tryFileToPhoto(filename, photosDirectory, done) {
         // The err object thrown by fs.statSync contains the 
         // full path to the file. We don't want to return that, 
         // so swallow the error details.
-        if(err.code = 'ENOENT') {
+        if(capture) {
+            done(null, 'unable to capture photo', 500);
+        }
+        else if(err.code = 'ENOENT') {
             done(null, 'photo ' + filename + ' does not exist', 404);
         }
         else {
@@ -100,7 +103,7 @@ var photosRepositoryPublic = {
     },
 
     get: function (id, pumpkinData, done) {
-        tryFileToPhoto(id, pumpkinData.photosDirectory, done);
+        tryFileToPhoto(id, pumpkinData.photosDirectory, false, done);
     },
 
     // Get the most recent photo
@@ -138,7 +141,7 @@ var photosRepositoryPublic = {
                             fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime();
                         });
 
-                        tryFileToPhoto(jpgFiles[0], pumpkinData.photosDirectory, done);
+                        tryFileToPhoto(jpgFiles[0], pumpkinData.photosDirectory, false, done);
                     }
                 }
             }
@@ -151,8 +154,12 @@ var photosRepositoryPublic = {
         let filename = newPhotoFileName();
         let fullPath = path.join(pumpkinData.photosDirectory, filename);
         console.log('Capturing new photo to ' + fullPath);
-        fswebcamArgs.push(fullPath);
-        execFile(fswebcam, fswebcamArgs, (error, stdout, stderr) => {
+
+        // Add our filename to the end of the args already defined
+        let args = fswebcamArgs.slice(0);
+        args.push(fullPath);
+
+        execFile(fswebcam, args, (error, stdout, stderr) => {
             if(error) {
                 console.log('fswebcam error: ' + error);
                 done(null, 'unable to capture photo', 500);
@@ -165,7 +172,7 @@ var photosRepositoryPublic = {
                 // writes to stderr, even on a succesful run. So, we can't reply 
                 // on error or stderr as indicators of success. Instead, we'll just see
                 // if fileNameToPhoto throws an error.
-                tryFileToPhoto(filename, pumpkinData.photosDirectory, done);
+                tryFileToPhoto(filename, pumpkinData.photosDirectory, true, done);
             }
         });
     }
