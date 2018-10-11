@@ -32,8 +32,9 @@ if(Gpio.accessible) {
     app.pumpkinData.motionSensorDevice = new MockGpio(MOTION_SENSOR_PIN, 'in', 'rising');
 }
 
-// Store the location of our sound files
+// Store the location of files
 app.pumpkinData.soundsDirectory = __dirname + '/sounds';
+app.pumpkinData.photosDirectory = __dirname + '/public/photos';
 
 // Track which features are enabled.
 // Keep in sync with features.json (maybe should do this programmatically)
@@ -59,10 +60,12 @@ var defaultRouter = require('./routes/default-router');
 var ledsRouter = require('./routes/leds-router')(io);
 var soundsRouter = require('./routes/sounds-router');
 var featuresRouter = require('./routes/features-router')(io);
+var photosRouter = require('./routes/photos-router');
 app.use('/', defaultRouter);
 app.use('/api/leds', ledsRouter);
 app.use('/api/sounds', soundsRouter);
 app.use('/api/features', featuresRouter);
+app.use('/api/photos', photosRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

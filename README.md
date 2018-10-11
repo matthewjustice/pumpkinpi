@@ -40,6 +40,10 @@ Assembling the hardware:
     $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
     $ sudo apt-get install -y nodejs
     ```
+- To support an attached USB webcam, install [fswebcam](https://manpages.debian.org/jessie/fswebcam/fswebcam.1.en.html):
+    ```sh 
+    $ sudo apt-get install fswebcam
+    ```
 
 ### Installing
 

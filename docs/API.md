@@ -43,10 +43,10 @@ Returns the collection of all LEDs as JSON.
  
 * **Sample Call**
 
-```sh
-curl -X GET \
-  http://localhost:5000/api/leds
-```
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/leds
+  ```
 
 **Get an LED by id**
 ----
@@ -86,10 +86,10 @@ Returns a single LED as JSON.
     **Content:** `{"message": "led led3 does not exist"}`
 
 * **Sample Call**
-```sh
-curl -X GET \
-  http://localhost:5000/api/leds/led1
-```
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/leds/led1
+  ```
 
 **Update an LED's status**
 ----
@@ -131,12 +131,12 @@ Sets an LED's status to on or off. Returns a single LED as JSON.
     **Content:** `{"message": "led led3 does not exist"}`
 
 * **Sample Call**
-```sh
-curl -X PUT \
-  http://localhost:5000/api/leds/led1 \
-  -H 'Content-Type: application/json' \
-  -d '{"status": "on"}'
-```
+  ```sh
+  curl -X PUT \
+    http://localhost:5000/api/leds/led1 \
+    -H 'Content-Type: application/json' \
+    -d '{"status": "on"}'
+  ```
 * **Notes**
 
     Since the `status` field is the only part of the LED object that can be modified, the body of the PUT only requires that field. If other fields are included they will be ignored.
@@ -180,10 +180,10 @@ Returns the collection of all sounds that can be played, as JSON.
  
 * **Sample Call**
 
-```sh
-curl -X GET \
-  http://localhost:5000/api/sounds
-```
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/sounds
+  ```
 
 **Get an sound by id**
 ----
@@ -219,10 +219,10 @@ Returns a single sound object as JSON.
     **Content:** `{ "message": "sound xyz does not exist" }`
 
 * **Sample Call**
-```sh
-curl -X GET \
-  http://localhost:5000/api/sounds/hello.wav
-```
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/sounds/hello.wav
+  ```
 
 **Play a sound**
 ----
@@ -260,10 +260,10 @@ Plays a sound on the Raspberry Pi speaker.
     **Content:** `{ "message": "sound zyz does not exist" }`
 
 * **Sample Call**
-```sh
-curl -X PUT \
-  http://localhost:5000/api/sounds/hello.wav
-```
+  ```sh
+  curl -X PUT \
+    http://localhost:5000/api/sounds/hello.wav
+  ```
 * **Notes**
 
     The PUT method was chosen since the call causes an action to occur on the server (Raspberry Pi). The state of the underlying sound object isn't modified, so no body is required in the PUT. PUTing any existing sound object by id just means "play this sound."
@@ -303,10 +303,10 @@ Returns the collection of all features as JSON. Features are capabilities of the
  
 * **Sample Call**
 
-```sh
-curl -X GET \
-  http://localhost:5000/api/features
-```
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/features
+  ```
 
 **Get a feature by id**
 ----
@@ -345,10 +345,10 @@ Returns a single feature as JSON.
     **Content:** `{ "message": "feature xyz does not exist" }`
 
 * **Sample Call**
-```sh
-curl -X GET \
-  http://localhost:5000/api/features/motion-sensor
-```
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/features/motion-sensor
+  ```
 
 **Enable or disable a feature**
 ----
@@ -385,12 +385,151 @@ Enables or disables a feature. Returns the modified feature as JSON.
     **Content:** `{ "message": "feature xyz does not exist" }`
 
 * **Sample Call**
-```sh
-curl -X PUT \
-  http://localhost:5000/api/features/motion-sensor \
-  -H 'Content-Type: application/json' \
-  -d '{"enabled": true}'
-```
+  ```sh
+  curl -X PUT \
+    http://localhost:5000/api/features/motion-sensor \
+    -H 'Content-Type: application/json' \
+    -d '{"enabled": true}'
+  ```
 * **Notes**
 
     Since the `enabled` field is the only part of the feature object that can be modified, the body of the PUT only requires that field. If other fields are included they will be ignored.
+
+# Photos capabilities
+
+**Enumerate photos**
+----
+
+Returns the collection of all photo data as JSON.
+
+* **URL**
+
+  /api/photos
+
+* **Method**
+
+  `GET`
+  
+*  **URL Params**
+
+   None
+
+* **Data Params**
+
+    None
+
+* **Success Response**
+  
+  **Code:** 200 <br />
+  **Content:** `[
+    {
+        "id": "2018-10-11T14-55-09.415Z.jpg",
+        "path": "/photos/2018-10-11T14-55-09.415Z.jpg"
+    },
+    {
+        "id": "2018-10-11T14-55-22.171Z.jpg",
+        "path": "/photos/2018-10-11T14-55-22.171Z.jpg"
+    }
+]`
+ 
+* **Sample Call**
+
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/photos
+  ```
+
+**Get a single photo by id**
+----
+
+Returns a single photo's data as JSON. If the provided id is "latest", the most recent photo will be returned.
+
+* **URL**
+
+  /api/photos/{id}
+
+* **Method:**
+
+  `GET` 
+  
+*  **URL Params**
+
+   **Required:**
+ 
+   `id=[string]`
+
+* **Data Params**
+
+  None
+
+* **Success Response**
+
+  **Code:** 200 <br />
+  **Content:** `{
+    "id": "2018-10-11T14-55-22.171Z.jpg",
+    "path": "/photos/2018-10-11T14-55-22.171Z.jpg"
+  }`
+ 
+* **Error Response**
+
+    **Code:** 404 Not Found <br />
+    **Content:** `{ "message": "photo xyz does not exist" }`
+
+    or, when requesting latest:
+
+    **Code:** 404 Not Found <br />
+    **Content:** `{ "message": "no photos have been captured" }`
+
+* **Sample Call**
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/photos/pumpkinpi-2018-10-09-123.jpg
+  ```
+  or
+  ```sh
+  curl -X GET \
+    http://localhost:5000/api/photos/latest
+  ```
+
+**Capture a photo**
+----
+
+Requests that a photo be captured on the Pumpkin Pi.
+
+* **URL**
+
+  /api/leds/{id}
+
+* **Method**
+
+  `POST` 
+  
+*  **URL Params**
+
+   None
+
+* **Data Params**
+
+  None
+
+* **Success Response**
+
+  **Code:** 200 <br />
+  **Content:** `{
+    "id": "2018-10-11T14-58-37.065Z.jpg",
+    "path": "/photos/2018-10-11T14-58-37.065Z.jpg"
+  }`
+ 
+* **Error Response**
+
+    **Code:** 500 <br />
+    **Content:** `{
+    "message": "unable to capture photo"
+    }`
+
+* **Sample Call**
+  ```sh
+  curl -X POST \
+    http://localhost:5000/api/photos
+  ```
+  
