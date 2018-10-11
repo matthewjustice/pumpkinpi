@@ -35,6 +35,31 @@ function fileNameToPhoto(filename, photosDirectory) {
     }
 }
 
+// Wrapper for fileNameToPhoto with done callback
+function tryFileToPhoto(filename, photosDirectory, done) {
+    try
+    {
+        let photo = fileNameToPhoto(filename, photosDirectory);
+        if(photo) {
+            done(photo);
+        }
+        else {
+            done(null, 'invalid photo', 404)
+        }
+    }
+    catch(err) {
+        // The err object thrown by fs.statSync contains the 
+        // full path to the file. We don't want to return that, 
+        // so swallow the error details.
+        if(err.code = 'ENOENT') {
+            done(null, 'photo ' + filename + ' does not exist', 404);
+        }
+        else {
+            done(null, 'unable to access photo ' + filename, 500);
+        }
+    }
+}
+
 // Generates a new filename
 function newPhotoFileName() {
     let date = new Date(Date.now());
@@ -72,22 +97,7 @@ var photosRepositoryPublic = {
     },
 
     get: function (id, pumpkinData, done) {
-        try
-        {
-            let photo = fileNameToPhoto(id, pumpkinData.photosDirectory);
-            done(photo);
-        }
-        catch(err) {
-            // The err object thrown by fs.statSync contains the 
-            // full path to the file. We don't want to return that, 
-            // so swallow the error details.
-            if(err.code = 'ENOENT') {
-                done(null, 'photo ' + id + ' does not exist', 404);
-            }
-            else {
-                done(null, null, 500);
-            }
-        }
+        tryFileToPhoto(id, pumpkinData.photosDirectory, done);
     },
 
     // Get the most recent photo
@@ -125,8 +135,7 @@ var photosRepositoryPublic = {
                             fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime();
                         });
 
-                        let photo = fileNameToPhoto(jpgFiles[0], pumpkinData.photosDirectory);
-                        done(photo);
+                        tryFileToPhoto(jpgFiles[0], pumpkinData.photosDirectory, done);
                     }
                 }
             }
@@ -140,14 +149,19 @@ var photosRepositoryPublic = {
         let fullPath = path.join(pumpkinData.photosDirectory, filename);
         console.log('Capturing new photo to ' + fullPath);
         execFile(fswebcam, [fullPath], (error, stdout, stderr) => {
-            if(error || stderr) {
-                console.log('fswebcam failure\n  error: ' + error + '\n  stderr: ' + stderr);
+            if(error) {
+                console.log('fswebcam error: ' + error);
                 done(null, 'unable to capture photo', 500);
             }
             else {
                 console.log('fswebcam stdout: ' + stdout);
-                let photo = fileNameToPhoto(filename, pumpkinData.photosDirectory);
-                done(photo);
+                console.log('fswebcam stderr: ' + stderr);
+
+                // fswebcam doesn't set an error exit code on failure, and it always
+                // writes to stderr, even on a succesful run. So, we can't reply 
+                // on error or stderr as indicators of success. Instead, we'll just see
+                // if fileNameToPhoto throws an error.
+                tryFileToPhoto(filename, pumpkinData.photosDirectory, done);
             }
         });
     }
