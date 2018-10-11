@@ -15,8 +15,11 @@ const path = require('path');
 const pathUrlPrefix = '/photos/';
 
 // Normally, fswebcam should be set to 'fswebcam'.
-// For testing purposes, set fswebcam = 'touch'
 const fswebcam = 'fswebcam';
+const fswebcamArgs = ['S', '2', '--set', 'brightness=50%'];
+// For testing purposes, use these values:
+//const fswebcam = 'touch';
+//const fswebcamArgs = [];
 
 // Converts a filename to a photo object if it isn't a directory.
 // This function can throw if the file can't be accessed.
@@ -148,7 +151,8 @@ var photosRepositoryPublic = {
         let filename = newPhotoFileName();
         let fullPath = path.join(pumpkinData.photosDirectory, filename);
         console.log('Capturing new photo to ' + fullPath);
-        execFile(fswebcam, [fullPath], (error, stdout, stderr) => {
+        fswebcamArgs.push(fullPath);
+        execFile(fswebcam, fswebcamArgs, (error, stdout, stderr) => {
             if(error) {
                 console.log('fswebcam error: ' + error);
                 done(null, 'unable to capture photo', 500);
