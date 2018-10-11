@@ -16,7 +16,7 @@ const pathUrlPrefix = '/photos/';
 
 // Normally, fswebcam should be set to 'fswebcam'.
 const fswebcam = 'fswebcam';
-const fswebcamArgs = ['S', '2', '--set', 'brightness=50%'];
+const fswebcamArgs = ['-S', '2', '--set', 'brightness=50%'];
 // For testing purposes, use these values:
 //const fswebcam = 'touch';
 //const fswebcamArgs = [];
