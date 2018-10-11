@@ -149,7 +149,7 @@ var photosRepositoryPublic = {
     },
 
     // Capture a new photo
-    capture: function (pumpkinData, done)
+    capture: function (pumpkinData, io, done)
     {
         let filename = newPhotoFileName();
         let fullPath = path.join(pumpkinData.photosDirectory, filename);
@@ -172,7 +172,13 @@ var photosRepositoryPublic = {
                 // writes to stderr, even on a succesful run. So, we can't reply 
                 // on error or stderr as indicators of success. Instead, we'll just see
                 // if fileNameToPhoto throws an error.
-                tryFileToPhoto(filename, pumpkinData.photosDirectory, true, done);
+                tryFileToPhoto(filename, pumpkinData.photosDirectory, true, (result, error, status) => {
+                    if(!error) {
+                        console.log('socket.io: photo-update ' + JSON.stringify(result));
+                        io.sockets.emit('photo-update', result);
+                    }
+                    done(result, error, status);
+                });
             }
         });
     }

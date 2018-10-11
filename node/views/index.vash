@@ -23,6 +23,12 @@
         <button id="play-button">Play</button>
     </div>
 
+    <h2>Capture a photo</h2>
+    <div>
+        <img src="/images/initial-photo.png" width="352" height="288" id="photo-image">
+        <button id="photo-button">Take Photo</button>
+    </div>
+
     <h2>Options</h2>
     <div>
         <label id="motion-sensor-label"><input type="checkbox" id="motion-sensor-checkbox"> Enable motion sensor</label>
