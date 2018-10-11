@@ -1,0 +1,6 @@
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
+# This directory is needed to hold captured images
+# but those images should not be checked in to git.

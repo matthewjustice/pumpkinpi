@@ -16,6 +16,7 @@ Parts needed:
 - Current-limiting resistors (approx 220 Ω)
 - Small speakers
 - Jack-o'-lantern plastic shell
+- USB webcam
 
 Assembling the hardware:
 - Cut LED-sized holes in the eyes of the jack-o'-lantern.
@@ -26,6 +27,7 @@ Assembling the hardware:
 - Connect the speakers to the Raspberry Pi's 3.5mm audio output jack.
 - Place the LEDs through the eyeholes, and connect their positive pins to GPIO 17 (pin 11) and GPIO 27 (pin 13) on the Raspberry Pi. Be sure to include a current-limiting resistor in series as well. Connect the other pin of the LEDs to ground.
 - Place the motion sensor in the nose hole, connecting it to 5 volts, ground, and GPIO 4 (pin 7).
+- Connect the USB webcam to a USB port on the Raspberry Pi.
 
 ![PumpkinPi wiring diagram](docs/pumpkinpi_wiring_diagram.png)
 
@@ -39,6 +41,10 @@ Assembling the hardware:
     ```sh
     $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
     $ sudo apt-get install -y nodejs
+    ```
+- To support an attached USB webcam, install [fswebcam](https://manpages.debian.org/jessie/fswebcam/fswebcam.1.en.html):
+    ```sh 
+    $ sudo apt-get install fswebcam
     ```
 
 ### Installing
