@@ -11,26 +11,29 @@
 </head>
 <body>
 
+    <div id="header">
+        <h1>PumpkinPi</h1>
+        <div class="small-text">Welcome! Toggle the eyes below, play a sound, or take a photo!</div>
+    </div>
+
     <div id="jack-container">
         <img src="images/jack.png">
         <input type="checkbox" id="led1-checkbox" class="checkbox-pumpkin"><label for="led1-checkbox" class="label-pumpkin" id="led1-label"></label>
         <input type="checkbox" id="led2-checkbox" class="checkbox-pumpkin"><label for="led2-checkbox" class="label-pumpkin" id="led2-label"></label>
     </div>
 
-    <h2>Play a sound</h2>
-    <div>
-        <select id="sounds-select" size="4"></select>
+    <div class="groupBox">
         <button id="play-button">Play</button>
+        <select id="sounds-select" size="4"></select>
     </div>
 
-    <h2>Capture a photo</h2>
-    <div>
-        <img src="/images/initial-photo.png" width="352" height="288" id="photo-image">
+    <div class="groupBox">
         <button id="photo-button">Take Photo</button>
+        <img src="/images/initial-photo.png" id="photo-image">
     </div>
 
-    <h2>Options</h2>
-    <div>
+    <div class="groupBox">
+        <div class="groupBoxHeader">Options</div>
         <label id="motion-sensor-label"><input type="checkbox" id="motion-sensor-checkbox"> Enable motion sensor</label>
     </div>
 

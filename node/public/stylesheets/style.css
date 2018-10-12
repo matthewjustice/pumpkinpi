@@ -1,5 +1,22 @@
 ﻿body {
     margin: 0px;
+    background-color: darkgray;
+    width: 320px;
+}
+
+#header {
+    margin: 10px;
+    background: black;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 4px;
+    padding-top: 2px;
+}
+
+.small-text {
+    font-size: 11pt;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #FF6A00;
 }
 
 #jack-container {
@@ -46,6 +63,7 @@ h1 {
     font-size: 18pt;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
+    color: #FF6A00;
 }
 
 h2 {
@@ -56,7 +74,7 @@ h2 {
 
 #motion-sensor-checkbox {
     width: 24px;
-    height: 24px;;
+    height: 24px;
 }
 
 #motion-sensor-label {
@@ -70,6 +88,45 @@ option {
 }
 
 button {
-    font-size: 16pt;
+    font-size: 20px;
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #FF6A00;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    margin-bottom: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 180px;
+    border-radius: 12px;
+}
+
+button:hover {background-color: #FF4F00}
+
+button:active {
+  background-color: #FF4F00;
+  transform: translateY(4px);
+}
+
+.groupBox {
+    padding: 20px;
+    margin: 10px;
+    background: #007F0E;
+    width: 260px
+}
+
+.groupBoxHeader {
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: black;
+    border: none;
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Photos are 352x288. Maintain aspect ratio.*/
+#photo-image {
+    width: 180px; 
+    height: 147px;
 }
