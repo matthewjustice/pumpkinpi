@@ -7,6 +7,7 @@ var sounds = null;
 var leds = null;
 var soundsRepository = require('../models/sounds-repository');
 var ledsRepository = require('../models/leds-repository');
+var photosRepository = require('../models/photos-repository');
 
 // Get all the sounds and save them to sounds array
 soundsRepository.getAll(function (result, error, status) {
@@ -68,6 +69,11 @@ function motionSensorPublic(pumpkinData, io) {
 
             // Turn LEDs on
             updateAllLeds('on', pumpkinData, io);
+
+            // Capture a photo
+            photosRepository.capture(pumpkinData, io, (result, error) => {
+                console.log('Photo capture result = ' + JSON.stringify(result) + ' error = ' + error);
+            });
 
             // Set a timer to turn off the LEDs shortly.
             setTimeout(() => {

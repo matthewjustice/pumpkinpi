@@ -10,6 +10,9 @@
         // Add sound data to select box
         addSoundsToMenu(document.getElementById('sounds-select'));
 
+        // Show latest image
+        showLatestPhoto(document.getElementById('photo-image'));
+
         // Show initial status
         getLedsStatus();
         getFeatureStatus();
@@ -28,11 +31,14 @@
         document.getElementById('motion-sensor-checkbox').onclick = function() { 
             featureChecked('motion-sensor', document.getElementById('motion-sensor-checkbox')) 
         };
+
+        document.getElementById('photo-button').onclick = capturePhoto;
         
         // Event handlers for socket.io
         var socket = io();
         socket.on('feature-update', onFeatureUpdate);
         socket.on('led-update', onLedUpdate);
+        socket.on('photo-update', onPhotoUpdate);
     });
 
     // Status object
@@ -228,6 +234,45 @@
     }
 
     //
+    // Photos stuff
+    //
+    function capturePhoto() {
+        var apiUrl = '/api/photos/'
+        console.log('POST ' + apiUrl);
+
+        fetch(apiUrl, { 
+            method: 'POST' 
+        })
+        .catch(function(error){
+            console.log('Error while capturing photo: ' + error.message);
+        });
+    }
+
+    function showLatestPhoto(photoImage) {
+        var apiUrl = '/api/photos/latest';
+        console.log('GET ' + apiUrl);
+
+        fetch(apiUrl)
+            .then(function(response) {
+                if(!response.ok)
+                {
+                    var e = {};
+                    e.message = response.statusText;
+                    throw(e);
+                }
+                return response.json();
+            })
+            .then(function(photo) {
+                console.log('latest photo: ' + JSON.stringify(photo));
+                // Set the photo
+                photoImage.src = photo.path;
+            })
+            .catch(function(error){
+                console.log('Error while getting latest photo: ' + error.message);
+            });
+    }
+
+    //
     // Socket.io stuff
     //
     function onFeatureUpdate(feature) {
@@ -244,6 +289,12 @@
         {
             setLedStatus(led);
         }
+    }
+
+    function onPhotoUpdate(photo) {
+        console.log('photo-update: ' + JSON.stringify(photo));
+        var img = document.getElementById('photo-image');
+        img.src = photo.path;
     }
 
 }());
