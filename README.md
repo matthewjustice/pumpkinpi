@@ -75,6 +75,30 @@ $ npm start
 
 At this point the application should be running on the Raspberry Pi on port 5000. Connect to it from a web browser on your local network using the IP address of the Raspberry Pi. For example, if your Raspberry Pi's IP is 192.168.1.123, point your web browser to http://192.168.1.123:5000. 
 
+### Start on boot
+
+You may want to configure your Raspberry Pi to run the software on boot. The [forever](https://www.npmjs.com/package/forever) tool can be used to ensure that the software is automatically restarted if needed, and we can use [crontab](https://linux.die.net/man/1/crontab) to start forever on boot.
+
+Install forever
+
+```sh
+$ sudo npm install forever -g
+```
+
+Edit the current crontab 
+
+```sh
+$ crontab -e
+```
+
+Add the following line to the crontab file, then exit and save changes. Be sure to use the correct path to your bin/www file; it may differ from the example below.
+
+```
+@reboot export NODE_ENV=production && /usr/bin/forever start /home/pi/pumpkinpi/node/bin/www
+```
+
+Restart your Raspberry Pi, and the PumpkinPi software should start automatically.
+
 ## API Documentation
 
 This project makes its functionality available with a web UI and a web API. If you would prefer to use the API directly rather than use the built-in UI, see the [API documentation](docs/API.md) for details.
