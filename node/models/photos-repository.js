@@ -14,17 +14,49 @@ const fs = require('fs');
 const path = require('path');
 const pathUrlPrefix = '/photos/';
 
+var autoBrightness = 0;
+
 // Normally, fswebcam should be set to 'fswebcam'.
 const fswebcam = 'fswebcam';
-const fswebcamArgs = [];
-
-// Leaving these previous args here, commented out,
-// as they may be appropriate for other camera setups
-//const fswebcamArgs = ['-S', '2', '--set', 'brightness=50%'];
-
-// For testing purposes, use these values:
+// For testing purposes, use this:
 //const fswebcam = 'touch';
-//const fswebcamArgs = [];
+
+// Returns the appropriate args for fswebcam
+function getWebcamArgs(pumpkinData, filename) {
+    let args = ['-S', '2', '--set'];
+    let webcamBrightness = pumpkinData['webcam-brightness'];
+    let brightInt;
+
+    // Determine the brightness
+    if (webcamBrightness === 'auto') {
+        // There's a problem with some webcams where the brighness gets
+        // a bit brighter or darker with each capture. A workaround is
+        // to toggle the brightness between 0% and 100% on every photo.
+        args.push('brightness=' + autoBrightness + '%');
+
+        // Toggle
+        if(autoBrightness == 0) {
+            autoBrightness = 100;
+        }
+        else {
+            autoBrightness = 0;
+        }
+    }
+    else if(brightInt = parseInt(webcamBrightness)) {
+        args.push('brightness=' + brightInt + '%');
+    }
+    else {
+        args.push('brightness=50%');
+    }
+
+    // Always add the filename to the end
+    args.push(filename);
+    console.log('getWebcamArgs() - args are: ' + args.toString().replace(/,/gi, ' '));
+
+    // For testing purposes, use this:
+    //args = [];
+    return args;
+}
 
 // Converts a filename to a photo object if it isn't a directory.
 // This function can throw if the file can't be accessed.
@@ -160,9 +192,7 @@ var photosRepositoryPublic = {
         let fullPath = path.join(pumpkinData.photosDirectory, filename);
         console.log('Capturing new photo to ' + fullPath);
 
-        // Add our filename to the end of the args already defined
-        let args = fswebcamArgs.slice(0);
-        args.push(fullPath);
+        let args = getWebcamArgs(pumpkinData, fullPath);
 
         execFile(fswebcam, args, (error, stdout, stderr) => {
             if(error) {

@@ -1,5 +1,8 @@
 {
     "motion-sensor": {
       "enabled": false
+    },
+    "webcam": {
+      "brightness": "auto"
     }
 }
