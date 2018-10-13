@@ -273,7 +273,7 @@ Plays a sound on the Raspberry Pi speaker.
 **Enumerate features**
 ----
 
-Returns the collection of all features as JSON. Features are capabilities of the PumpkinPi that can be enabled or disabled.
+Returns the collection of all features as JSON. Features are capabilities of the PumpkinPi that can be configured.
 
 * **URL**
 
@@ -350,10 +350,10 @@ Returns a single feature as JSON.
     http://localhost:5000/api/features/motion-sensor
   ```
 
-**Enable or disable a feature**
+**Modify a feature setting**
 ----
 
-Enables or disables a feature. Returns the modified feature as JSON.
+Modifies a feature setting. Returns the modified feature as JSON.
 
 * **URL**
 
@@ -372,7 +372,13 @@ Enables or disables a feature. Returns the modified feature as JSON.
 
   **Required:**
  
+  for id=`motion-sensor`<br />
    `{"enabled": boolean}` <br />
+
+  for id=`webcam`<br />
+   `{"brightness": int}` <br />
+   or <br />
+   `{"brightness": "auto-toggle"}` <br />
 
 * **Success Response**
 
@@ -393,7 +399,9 @@ Enables or disables a feature. Returns the modified feature as JSON.
   ```
 * **Notes**
 
-    Since the `enabled` field is the only part of the feature object that can be modified, the body of the PUT only requires that field. If other fields are included they will be ignored.
+    Since the `enabled` or `brightness` field is the only part of the feature object that can be modified, the body of the PUT only requires that field. If other fields are included they will be ignored.
+
+    For webcam brightness, valid values are 0 through 100 (representing a percentage), or `auto-toggle`, which is a special case that toggles the brightness between a high and low value on every capture. `auto-toggle` is used to work around a problem with certain webcams.
 
 # Photos capabilities
 
