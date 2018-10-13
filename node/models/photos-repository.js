@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const pathUrlPrefix = '/photos/';
 
-var autoBrightness = 0;
+var autoToggleBrightnessValue = 0;
 
 // Normally, fswebcam should be set to 'fswebcam'.
 const fswebcam = 'fswebcam';
@@ -28,18 +28,18 @@ function getWebcamArgs(pumpkinData, filename) {
     let brightInt;
 
     // Determine the brightness
-    if (webcamBrightness === 'auto') {
-        // There's a problem with some webcams where the brighness gets
+    if (webcamBrightness === 'auto-toggle') {
+        // There's a problem with some webcams where the brightness gets
         // a bit brighter or darker with each capture. A workaround is
         // to toggle the brightness between 0% and 100% on every photo.
-        args.push('brightness=' + autoBrightness + '%');
+        args.push('brightness=' + autoToggleBrightnessValue + '%');
 
         // Toggle
-        if(autoBrightness == 0) {
-            autoBrightness = 100;
+        if(autoToggleBrightnessValue == 0) {
+            autoToggleBrightnessValue = 100;
         }
         else {
-            autoBrightness = 0;
+            autoToggleBrightnessValue = 0;
         }
     }
     else if(brightInt = parseInt(webcamBrightness)) {

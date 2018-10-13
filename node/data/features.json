@@ -3,6 +3,6 @@
       "enabled": false
     },
     "webcam": {
-      "brightness": "auto"
+      "brightness": "auto-toggle"
     }
 }
