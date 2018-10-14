@@ -82,11 +82,13 @@ var featuresRepositoryPublic = {
 
                     if(updatedfeature.brightness === 'auto-toggle') {
                         pumpkinData[pumpkinProperty] = 'auto-toggle';
+                        feature.brightness = 'auto-toggle';
                         console.log('set brightness to auto-toggle');
                         validInput = true;
                     }
-                    else if(brightInt = parseInt(updatedfeature.brightness)) {
+                    else if((brightInt = parseInt(updatedfeature.brightness)) != NaN) {
                         pumpkinData[pumpkinProperty] = brightInt;
+                        feature.brightness = brightInt;
                         console.log('set brightness to ' + brightInt);
                         validInput = true;
                     }
