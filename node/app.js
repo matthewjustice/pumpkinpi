@@ -39,6 +39,7 @@ app.pumpkinData.photosDirectory = __dirname + '/public/photos';
 // Track which features are enabled.
 // Keep in sync with features.json (maybe should do this programmatically)
 app.pumpkinData['motion-sensor-enabled'] = false;
+app.pumpkinData['webcam-brightness'] = 'auto-toggle';
 
 // Handle motion sensor events
 const motionSensor = require('./models/motion-sensor')(app.pumpkinData, io)

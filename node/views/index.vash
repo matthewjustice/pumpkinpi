@@ -33,9 +33,19 @@
     </div>
 
     <div class="groupBox">
-        <div class="groupBoxHeader">Options</div>
-        <label id="motion-sensor-label"><input type="checkbox" id="motion-sensor-checkbox"> Enable motion sensor</label>
-    </div>
+        <div class="groupBoxHeader">Settings</div>
 
+        <div class="settings-container"> 
+            <label id="motion-sensor-label" class="settings-label"><input type="checkbox" id="motion-sensor-checkbox" class="settings-checkbox"> Enable motion sensor</label>
+        </div>
+
+        <div class="settings-container"> 
+            <label id="webcam-brightness-range-label" class="settings-label">Webcam brightness</label>
+            <input type="range" min="0" max="100" value="50" class="slider" id="brightness-slider">
+            <span id="brightness-value">50</span>
+            <br />
+            <label id="auto-brightness-checkbox-label" class="settings-label"><input type="checkbox" id="auto-brightness-checkbox" class="settings-checkbox"> Auto toggle brightness</label>
+        </div>
+    </div>
 </body>
 </html>

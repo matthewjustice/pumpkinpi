@@ -56,19 +56,49 @@ var featuresRepositoryPublic = {
                 // Add derived properties
                 feature.id = id;
 
-                // update details (only allow boolean values)
-                if(updatedfeature.enabled) {
-                    feature.enabled = true;
-                } else {
-                    feature.enabled = false;
+                // Currently only motion-sensor supports the enabled property
+                if(updatedfeature.hasOwnProperty('enabled')) {
+                    // update details (only allow boolean values)
+                    if(updatedfeature.enabled) {
+                        feature.enabled = true;
+                    } else {
+                        feature.enabled = false;
+                    }
+
+                    // Update pumpkin data
+                    var pumpkinProperty = id + '-enabled';
+                    if(pumpkinData.hasOwnProperty(pumpkinProperty)) {
+                        pumpkinData[pumpkinProperty] = feature.enabled;
+                        io.sockets.emit('feature-update', feature);
+                        console.log('Update feature: ' + pumpkinProperty + ' is ' + feature.enabled);
+                    }
                 }
 
-                // Update pumpkin data
-                var pumpkinProperty = id + '-enabled';
-                if(pumpkinData.hasOwnProperty(pumpkinProperty)) {
-                    pumpkinData[pumpkinProperty] = feature.enabled;
-                    io.sockets.emit('feature-update', feature);
-                    console.log('Update feature: ' + pumpkinProperty + ' is ' + feature.enabled);
+                // Currently only webcam supports the enabled property
+                if(updatedfeature.hasOwnProperty('brightness')) {
+                    let pumpkinProperty = id + '-brightness';
+                    let brightInt;
+                    let validInput = false;
+
+                    if(updatedfeature.brightness === 'auto-toggle') {
+                        pumpkinData[pumpkinProperty] = 'auto-toggle';
+                        feature.brightness = 'auto-toggle';
+                        console.log('set brightness to auto-toggle');
+                        validInput = true;
+                    }
+                    else if((brightInt = parseInt(updatedfeature.brightness)) != NaN) {
+                        pumpkinData[pumpkinProperty] = brightInt;
+                        feature.brightness = brightInt;
+                        console.log('set brightness to ' + brightInt);
+                        validInput = true;
+                    }
+                    else {
+                        console.log(updatedfeature.brightness + ' is not a valid brightness value');
+                    }
+
+                    if(validInput) {
+                        io.sockets.emit('feature-update', feature);
+                    }
                 }
 
                 done(feature);

@@ -29,10 +29,14 @@
         };
 
         document.getElementById('motion-sensor-checkbox').onclick = function() { 
-            featureChecked('motion-sensor', document.getElementById('motion-sensor-checkbox')) 
+            featureEnabledChecked('motion-sensor', document.getElementById('motion-sensor-checkbox')) 
         };
 
         document.getElementById('photo-button').onclick = capturePhoto;
+
+        document.getElementById('brightness-slider').oninput = brightnessSliderChanged;
+
+        document.getElementById('auto-brightness-checkbox').onclick = autoBrightnessChecked;
         
         // Event handlers for socket.io
         var socket = io();
@@ -41,26 +45,19 @@
         socket.on('photo-update', onPhotoUpdate);
     });
 
-    // Status object
-    var serverStatus = {};
+    var brightnessTimerActive = false;
+    var brightnessSliderValuesArray = [];
 
     //
     // LED stuff
     //
     function ledChecked(ledId, checkbox) {
         console.log('ledChecked ' + ledId + ' ' + checkbox.checked);
-        if(serverStatus[ledId] != checkbox.checked) {
-            // The server-reported status doesn't match the UI.
-            // This likely means this check event happened as 
-            // the result a user-invoked UI change, 
-            // not a socket.io change to the UI. Since the user
-            // is requesting a state change, send the request.
-            if(checkbox.checked) {
-                updateLed(ledId, 'on');
-            }
-            else {
-                updateLed(ledId, 'off');
-            }
+        if(checkbox.checked) {
+            updateLed(ledId, 'on');
+        }
+        else {
+            updateLed(ledId, 'off');
         }
     }
     function updateLed(ledId, status) {
@@ -81,7 +78,6 @@
     }
 
     function setLedStatus(led) {
-        serverStatus[led.id] = (led.status === 'on');
         var elementId = led.id + '-checkbox';
         document.getElementById(elementId).checked = (led.status === 'on');
     }
@@ -115,24 +111,17 @@
     //
     // Feature stuff
     //
-    function featureChecked(featureId, checkbox) {
-        console.log('featureChecked ' + featureId + ' ' + checkbox.checked);
-        if(serverStatus[featureId] != checkbox.checked) {
-            // The server-reported status doesn't match the UI.
-            // This likely means this check event happened as 
-            // the result a user-invoked UI change, 
-            // not a socket.io change to the UI. Since the user
-            // is requesting a state change, send the request.
-            if(checkbox.checked) {
-                updateFeature(featureId, true);
-            }
-            else {
-                updateFeature(featureId, false);
-            }
+    function featureEnabledChecked(featureId, checkbox) {
+        console.log('featureEnabledChecked ' + featureId + ' ' + checkbox.checked);
+        if(checkbox.checked) {
+            updateFeature(featureId, {enabled: true});
+        }
+        else {
+            updateFeature(featureId, {enabled: false});
         }
     }
 
-    function updateFeature(featureId, enabled) {
+    function updateFeature(featureId, data) {
         var apiUrl = '/api/features/' + featureId;
         console.log('PUT ' + apiUrl);
 
@@ -142,17 +131,16 @@
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({enabled: enabled})
+            body: JSON.stringify(data)
         })
         .catch(function(error){
             console.log('Error while updating feature: ' + error.message);
         });
     }
     
-    function setFeatureStatus(feature) {
-        serverStatus[feature.id] = feature.enabled;
-        var elementId = feature.id + '-checkbox';
-        document.getElementById(elementId).checked = feature.enabled;
+    function setClientFeatureBoolean(featureKey, value) {
+        var elementId = featureKey + '-checkbox';
+        document.getElementById(elementId).checked = value;
     }
 
     function getFeatureStatus() {
@@ -172,13 +160,71 @@
                     var feature = features[i];
                     if(feature.id === 'motion-sensor')
                     {
-                        setFeatureStatus(feature);
+                        setClientFeatureBoolean(feature.id, feature.enabled);
+                    }
+                    else if(feature.id === 'webcam')
+                    {
+                        handleWebcamFeatureUpdate(feature);
                     }
                 }
             })
             .catch(function(error){
-                console.log('Error while getting leds: ' + error.message);
+                console.log('Error while getting features: ' + error.message);
             });
+    }
+
+    function brightnessSliderChanged() {
+        // Update the UI integer value
+        var brightnessValue = document.getElementById('brightness-value');
+        brightnessValue.innerHTML = this.value;
+
+        // The slider change event usually happens multiple times when 
+        // a user moves the slider. To prevent hammering the server, we
+        // just collect the values in an array, start a timer,
+        // and after one second we'll post the last value collected.
+        brightnessSliderValuesArray.push(this.value);
+
+        if(!brightnessTimerActive) {
+            brightnessTimerActive = true;
+            setTimeout(() => {
+                brightnessTimerActive = false;
+
+                if(brightnessSliderValuesArray && brightnessSliderValuesArray.length > 0) {
+                    var lastValue = brightnessSliderValuesArray[brightnessSliderValuesArray.length - 1];
+                    // Update the server feature to the last value
+                    updateFeature('webcam', {brightness: lastValue});
+                    // Clear our array
+                    brightnessSliderValuesArray.length = [];
+                }
+            }, 1000);
+        }
+    }
+
+    function hideBrightnessSlider(hide) {
+        var brightnessSlider = document.getElementById('brightness-slider');
+        var brightnessValue = document.getElementById('brightness-value');
+
+        // If auto brightness is checked, disable / hide the slider
+        brightnessSlider.disabled = hide;
+        brightnessSlider.style.visibility = hide ? 'hidden' : 'visible';
+        brightnessValue.style.visibility = hide ? 'hidden' : 'visible';
+    }
+
+    function autoBrightnessChecked() {
+        console.log('autoBrightnessChecked');
+
+        // Show or hide the brightness slider
+        hideBrightnessSlider(this.checked);
+
+        // If checked, set the webcam value to auto-toggle, 
+        // otherwise set to the slider value.
+        if (this.checked) {
+            updateFeature('webcam', {brightness: 'auto-toggle'});
+        }
+        else {
+            var brightnessValue = document.getElementById('brightness-value').innerHTML;
+            updateFeature('webcam', {brightness: brightnessValue});
+        }
     }
 
     //
@@ -277,16 +323,50 @@
     //
     function onFeatureUpdate(feature) {
         console.log('feature-update: ' + JSON.stringify(feature));
-        if(feature.id === 'motion-sensor')
-        {
-            setFeatureStatus(feature);
+        if(feature.id === 'motion-sensor') {
+            setClientFeatureBoolean(feature.id, feature.enabled);
+        }
+        else if(feature.id === 'webcam') {
+            handleWebcamFeatureUpdate(feature);
+        }
+    }
+
+    function handleWebcamFeatureUpdate(feature) {
+        var brightInt;
+        // Set the client boolean state (which controls the checkbox)
+        // to true if the brightness value is 'auto-toggle'
+        if(feature.brightness === 'auto-toggle') {
+            // Check the auto box and hide the slider
+            setClientFeatureBoolean('auto-brightness', true);
+            hideBrightnessSlider(true);
+        }
+        else if((brightInt = parseInt(feature.brightness)) != NaN) {
+            // Ensure valid range
+            if(brightInt > 100) {
+                brightInt = 100;
+            }
+            else if(brightInt < 0) {
+                brightInt = 0;
+            }
+
+            // Turn off the auto checkbox
+            setClientFeatureBoolean('auto-brightness', false);
+
+            // Set slider values
+            document.getElementById('brightness-slider').value = brightInt;
+            document.getElementById('brightness-value').innerHTML = brightInt;
+
+            // Show the slider
+            hideBrightnessSlider(false);
+        }
+        else {
+            console.log(updatedfeature.brightness + ' is an invalid brightness value.');
         }
     }
 
     function onLedUpdate(led) {
         console.log('led-update: ' + JSON.stringify(led));
-        if(led.id === 'led1' || led.id == 'led2')
-        {
+        if(led.id === 'led1' || led.id == 'led2') {
             setLedStatus(led);
         }
     }

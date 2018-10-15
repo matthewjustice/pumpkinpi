@@ -72,13 +72,13 @@ h2 {
     font-weight: bold;
 }
 
-#motion-sensor-checkbox {
+.settings-checkbox {
     width: 24px;
     height: 24px;
     vertical-align:middle;
 }
 
-#motion-sensor-label {
+.settings-label {
     font-size: 12pt;
     font-family: Arial, Helvetica, sans-serif;
     color: white;
@@ -131,4 +131,30 @@ button:active {
 #photo-image {
     width: 180px; 
     height: 147px;
+}
+
+.settings-container {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    width: 100%;
+    border-bottom-color: black;
+    border-bottom-style: dashed;
+    padding-bottom: 10px;
+}
+
+#brightness-slider {
+    appearance: none;
+    width: 200px;
+    height: 26px;
+    outline: none;
+    vertical-align: middle;
+}
+
+#brightness-value {
+    font-size: 12pt;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    line-height: 26px;
+    margin-left: 10px;
+    background: black;
 }
