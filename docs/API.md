@@ -185,7 +185,7 @@ Returns the collection of all sounds that can be played, as JSON.
     http://localhost:5000/api/sounds
   ```
 
-**Get an sound by id**
+**Get a sound by id**
 ----
 Returns a single sound object as JSON.
 
@@ -357,7 +357,7 @@ Modifies a feature setting. Returns the modified feature as JSON.
 
 * **URL**
 
-  /api/leds/{id}
+  /api/features/{id}
 
 * **Method**
 
@@ -506,7 +506,7 @@ Requests that a photo be captured on the Pumpkin Pi.
 
 * **URL**
 
-  /api/leds/{id}
+  /api/photos/{id}
 
 * **Method**
 
