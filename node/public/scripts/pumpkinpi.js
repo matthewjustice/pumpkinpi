@@ -1,9 +1,9 @@
 // pumpkinpi.js - The client-side JavaScript code for the Pumpkin Pi app.
 // No frameworks used, just JavaScript DOM manipulation.
-// All code is encloded in a self-executing anonymous function, 
+// All code is encloded in a self-executing anonymous function,
 // so everything is private and doesn't pollute the global namespace.
 
-"use strict";
+'use strict';
 
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
@@ -20,16 +20,16 @@
         // Bind event handlers
         document.getElementById('play-button').onclick = playSound;
 
-        document.getElementById('led1-checkbox').onclick = function() { 
-            ledChecked('led1', document.getElementById('led1-checkbox')) 
+        document.getElementById('led1-checkbox').onclick = function() {
+            ledChecked('led1', document.getElementById('led1-checkbox'));
         };
 
-        document.getElementById('led2-checkbox').onclick = function() { 
-            ledChecked('led2', document.getElementById('led2-checkbox')) 
+        document.getElementById('led2-checkbox').onclick = function() {
+            ledChecked('led2', document.getElementById('led2-checkbox'));
         };
 
-        document.getElementById('motion-sensor-checkbox').onclick = function() { 
-            featureEnabledChecked('motion-sensor', document.getElementById('motion-sensor-checkbox')) 
+        document.getElementById('motion-sensor-checkbox').onclick = function() {
+            featureEnabledChecked('motion-sensor', document.getElementById('motion-sensor-checkbox'));
         };
 
         document.getElementById('photo-button').onclick = capturePhoto;
@@ -37,31 +37,31 @@
         document.getElementById('brightness-slider').oninput = brightnessSliderChanged;
 
         document.getElementById('auto-brightness-checkbox').onclick = autoBrightnessChecked;
-        
+
         // Event handlers for socket.io
-        var socket = io();
+        const socket = io();
         socket.on('feature-update', onFeatureUpdate);
         socket.on('led-update', onLedUpdate);
         socket.on('photo-update', onPhotoUpdate);
     });
 
-    var brightnessTimerActive = false;
-    var brightnessSliderValuesArray = [];
+    let brightnessTimerActive = false;
+    const brightnessSliderValuesArray = [];
 
     //
     // LED stuff
     //
     function ledChecked(ledId, checkbox) {
         console.log('ledChecked ' + ledId + ' ' + checkbox.checked);
-        if(checkbox.checked) {
+        if (checkbox.checked) {
             updateLed(ledId, 'on');
-        }
-        else {
+        } else {
             updateLed(ledId, 'off');
         }
     }
+
     function updateLed(ledId, status) {
-        var apiUrl = '/api/leds/' + ledId;
+        const apiUrl = '/api/leds/' + ledId;
         console.log('PUT ' + apiUrl);
 
         fetch(apiUrl, {
@@ -72,18 +72,18 @@
             },
             body: JSON.stringify({status: status})
         })
-        .catch(function(error){
-            console.log('Error while updating LED: ' + error.message);
-        });
+            .catch(function(error) {
+                console.log('Error while updating LED: ' + error.message);
+            });
     }
 
     function setLedStatus(led) {
-        var elementId = led.id + '-checkbox';
+        const elementId = led.id + '-checkbox';
         document.getElementById(elementId).checked = (led.status === 'on');
     }
 
     function getLedsStatus() {
-        var apiUrl = '/api/leds';
+        const apiUrl = '/api/leds';
         console.log('GET ' + apiUrl);
 
         fetch(apiUrl)
@@ -94,16 +94,14 @@
                 console.log('leds: ' + JSON.stringify(leds));
 
                 // Update status of LED1 and LED2
-                for(var i = 0, length = leds.length; i < length; i++)
-                {
-                    var led = leds[i];
-                    if(led.id === 'led1' || led.id == 'led2')
-                    {
+                for (let i = 0, length = leds.length; i < length; i++) {
+                    const led = leds[i];
+                    if (led.id === 'led1' || led.id == 'led2') {
                         setLedStatus(led);
                     }
                 }
             })
-            .catch(function(error){
+            .catch(function(error) {
                 console.log('Error while getting leds: ' + error.message);
             });
     }
@@ -113,16 +111,15 @@
     //
     function featureEnabledChecked(featureId, checkbox) {
         console.log('featureEnabledChecked ' + featureId + ' ' + checkbox.checked);
-        if(checkbox.checked) {
+        if (checkbox.checked) {
             updateFeature(featureId, {enabled: true});
-        }
-        else {
+        } else {
             updateFeature(featureId, {enabled: false});
         }
     }
 
     function updateFeature(featureId, data) {
-        var apiUrl = '/api/features/' + featureId;
+        const apiUrl = '/api/features/' + featureId;
         console.log('PUT ' + apiUrl);
 
         fetch(apiUrl, {
@@ -133,18 +130,18 @@
             },
             body: JSON.stringify(data)
         })
-        .catch(function(error){
-            console.log('Error while updating feature: ' + error.message);
-        });
+            .catch(function(error) {
+                console.log('Error while updating feature: ' + error.message);
+            });
     }
-    
+
     function setClientFeatureBoolean(featureKey, value) {
-        var elementId = featureKey + '-checkbox';
+        const elementId = featureKey + '-checkbox';
         document.getElementById(elementId).checked = value;
     }
 
     function getFeatureStatus() {
-        var apiUrl = '/api/features';
+        const apiUrl = '/api/features';
         console.log('GET ' + apiUrl);
 
         fetch(apiUrl)
@@ -155,42 +152,38 @@
                 console.log('features: ' + JSON.stringify(features));
 
                 // Update status of the motion sensor feature
-                for(var i = 0, length = features.length; i < length; i++)
-                {
-                    var feature = features[i];
-                    if(feature.id === 'motion-sensor')
-                    {
+                for (let i = 0, length = features.length; i < length; i++) {
+                    const feature = features[i];
+                    if (feature.id === 'motion-sensor') {
                         setClientFeatureBoolean(feature.id, feature.enabled);
-                    }
-                    else if(feature.id === 'webcam')
-                    {
+                    } else if (feature.id === 'webcam') {
                         handleWebcamFeatureUpdate(feature);
                     }
                 }
             })
-            .catch(function(error){
+            .catch(function(error) {
                 console.log('Error while getting features: ' + error.message);
             });
     }
 
     function brightnessSliderChanged() {
         // Update the UI integer value
-        var brightnessValue = document.getElementById('brightness-value');
+        const brightnessValue = document.getElementById('brightness-value');
         brightnessValue.innerHTML = this.value;
 
-        // The slider change event usually happens multiple times when 
+        // The slider change event usually happens multiple times when
         // a user moves the slider. To prevent hammering the server, we
         // just collect the values in an array, start a timer,
         // and after one second we'll post the last value collected.
         brightnessSliderValuesArray.push(this.value);
 
-        if(!brightnessTimerActive) {
+        if (!brightnessTimerActive) {
             brightnessTimerActive = true;
             setTimeout(() => {
                 brightnessTimerActive = false;
 
-                if(brightnessSliderValuesArray && brightnessSliderValuesArray.length > 0) {
-                    var lastValue = brightnessSliderValuesArray[brightnessSliderValuesArray.length - 1];
+                if (brightnessSliderValuesArray && brightnessSliderValuesArray.length > 0) {
+                    const lastValue = brightnessSliderValuesArray[brightnessSliderValuesArray.length - 1];
                     // Update the server feature to the last value
                     updateFeature('webcam', {brightness: lastValue});
                     // Clear our array
@@ -201,8 +194,8 @@
     }
 
     function hideBrightnessSlider(hide) {
-        var brightnessSlider = document.getElementById('brightness-slider');
-        var brightnessValue = document.getElementById('brightness-value');
+        const brightnessSlider = document.getElementById('brightness-slider');
+        const brightnessValue = document.getElementById('brightness-value');
 
         // If auto brightness is checked, disable / hide the slider
         brightnessSlider.disabled = hide;
@@ -216,13 +209,12 @@
         // Show or hide the brightness slider
         hideBrightnessSlider(this.checked);
 
-        // If checked, set the webcam value to auto-toggle, 
+        // If checked, set the webcam value to auto-toggle,
         // otherwise set to the slider value.
         if (this.checked) {
             updateFeature('webcam', {brightness: 'auto-toggle'});
-        }
-        else {
-            var brightnessValue = document.getElementById('brightness-value').innerHTML;
+        } else {
+            const brightnessValue = document.getElementById('brightness-value').innerHTML;
             updateFeature('webcam', {brightness: brightnessValue});
         }
     }
@@ -232,9 +224,9 @@
     //
     function playSound() {
         // Get the selected sound id
-        var select = document.getElementById("sounds-select");
-        var options = select.options;
-        if(options.selectedIndex == -1) {
+        const select = document.getElementById('sounds-select');
+        const options = select.options;
+        if (options.selectedIndex == -1) {
             // Early exit if no sound is selected.
             return;
         }
@@ -242,20 +234,20 @@
         // Playing a sound requires a PUT to the resource.
         // No body is included because the state of the object
         // on the server is not modified.
-        var soundId = options[options.selectedIndex].value;
-        var apiUrl = '/api/sounds/' + soundId;
+        const soundId = options[options.selectedIndex].value;
+        const apiUrl = '/api/sounds/' + soundId;
         console.log('PUT ' + apiUrl);
 
-        fetch(apiUrl, { 
-            method: 'PUT' 
+        fetch(apiUrl, {
+            method: 'PUT'
         })
-        .catch(function(error){
-            console.log('Error while playing sound: ' + error.message);
-        });
+            .catch(function(error) {
+                console.log('Error while playing sound: ' + error.message);
+            });
     }
 
     function addSoundsToMenu(selectBox) {
-        var apiUrl = '/api/sounds';
+        const apiUrl = '/api/sounds';
         console.log('GET ' + apiUrl);
 
         fetch(apiUrl)
@@ -265,16 +257,15 @@
             .then(function(sounds) {
                 console.log('sounds: ' + JSON.stringify(sounds));
                 // Add each element to the select box
-                for(var i = 0, length = sounds.length; i < length; i++)
-                {
-                    console.log("Adding " + sounds[i].id);
-                    let option = document.createElement('option');
+                for (let i = 0, length = sounds.length; i < length; i++) {
+                    console.log('Adding ' + sounds[i].id);
+                    const option = document.createElement('option');
                     option.value = sounds[i].id;
                     option.innerHTML = sounds[i].title;
                     selectBox.appendChild(option);
                 }
             })
-            .catch(function(error){
+            .catch(function(error) {
                 console.log('Error while getting sounds: ' + error.message);
             });
     }
@@ -283,28 +274,27 @@
     // Photos stuff
     //
     function capturePhoto() {
-        var apiUrl = '/api/photos/'
+        const apiUrl = '/api/photos/';
         console.log('POST ' + apiUrl);
 
-        fetch(apiUrl, { 
-            method: 'POST' 
+        fetch(apiUrl, {
+            method: 'POST'
         })
-        .catch(function(error){
-            console.log('Error while capturing photo: ' + error.message);
-        });
+            .catch(function(error) {
+                console.log('Error while capturing photo: ' + error.message);
+            });
     }
 
     function showLatestPhoto(photoImage) {
-        var apiUrl = '/api/photos/latest';
+        const apiUrl = '/api/photos/latest';
         console.log('GET ' + apiUrl);
 
         fetch(apiUrl)
             .then(function(response) {
-                if(!response.ok)
-                {
-                    var e = {};
+                if (!response.ok) {
+                    const e = {};
                     e.message = response.statusText;
-                    throw(e);
+                    throw (e);
                 }
                 return response.json();
             })
@@ -313,7 +303,7 @@
                 // Set the photo
                 photoImage.src = photo.path;
             })
-            .catch(function(error){
+            .catch(function(error) {
                 console.log('Error while getting latest photo: ' + error.message);
             });
     }
@@ -323,29 +313,26 @@
     //
     function onFeatureUpdate(feature) {
         console.log('feature-update: ' + JSON.stringify(feature));
-        if(feature.id === 'motion-sensor') {
+        if (feature.id === 'motion-sensor') {
             setClientFeatureBoolean(feature.id, feature.enabled);
-        }
-        else if(feature.id === 'webcam') {
+        } else if (feature.id === 'webcam') {
             handleWebcamFeatureUpdate(feature);
         }
     }
 
     function handleWebcamFeatureUpdate(feature) {
-        var brightInt;
+        let brightInt;
         // Set the client boolean state (which controls the checkbox)
         // to true if the brightness value is 'auto-toggle'
-        if(feature.brightness === 'auto-toggle') {
+        if (feature.brightness === 'auto-toggle') {
             // Check the auto box and hide the slider
             setClientFeatureBoolean('auto-brightness', true);
             hideBrightnessSlider(true);
-        }
-        else if((brightInt = parseInt(feature.brightness)) != NaN) {
+        } else if ((brightInt = parseInt(feature.brightness)) != NaN) {
             // Ensure valid range
-            if(brightInt > 100) {
+            if (brightInt > 100) {
                 brightInt = 100;
-            }
-            else if(brightInt < 0) {
+            } else if (brightInt < 0) {
                 brightInt = 0;
             }
 
@@ -358,23 +345,21 @@
 
             // Show the slider
             hideBrightnessSlider(false);
-        }
-        else {
+        } else {
             console.log(updatedfeature.brightness + ' is an invalid brightness value.');
         }
     }
 
     function onLedUpdate(led) {
         console.log('led-update: ' + JSON.stringify(led));
-        if(led.id === 'led1' || led.id == 'led2') {
+        if (led.id === 'led1' || led.id == 'led2') {
             setLedStatus(led);
         }
     }
 
     function onPhotoUpdate(photo) {
         console.log('photo-update: ' + JSON.stringify(photo));
-        var img = document.getElementById('photo-image');
+        const img = document.getElementById('photo-image');
         img.src = photo.path;
     }
-
 }());

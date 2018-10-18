@@ -19,5 +19,9 @@
     "onoff": "^3.2.2",
     "socket.io": "^2.1.1",
     "vash": "^0.12.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-google": "^0.11.0"
   }
 }
