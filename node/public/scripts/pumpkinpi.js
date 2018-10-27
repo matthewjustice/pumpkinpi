@@ -88,7 +88,7 @@
         const apiUrl = '/api/leds';
         console.log('GET ' + apiUrl);
 
-        fetch(apiUrl)
+        fetch(apiUrl, {cache: 'no-cache'})
             .then(function(response) {
                 return response.json();
             })
@@ -146,7 +146,7 @@
         const apiUrl = '/api/features';
         console.log('GET ' + apiUrl);
 
-        fetch(apiUrl)
+        fetch(apiUrl, {cache: 'no-cache'})
             .then(function(response) {
                 return response.json();
             })
@@ -295,7 +295,7 @@
         const apiUrl = '/api/photos/latest';
         console.log('GET ' + apiUrl);
 
-        fetch(apiUrl)
+        fetch(apiUrl, {cache: 'no-cache'})
             .then(function(response) {
                 if (!response.ok) {
                     const e = {};
