@@ -131,6 +131,18 @@ button:active {
 #photo-image {
     width: 180px; 
     height: 147px;
+    margin-bottom: 10px;
+}
+
+.photo {
+    width: 90px; 
+    height: 74px; 
+    margin: 5px; 
+}
+
+#photos-container {
+    margin:10px;
+    width: 100%;
 }
 
 .settings-container {

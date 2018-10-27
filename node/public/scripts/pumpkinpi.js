@@ -38,6 +38,9 @@
 
         document.getElementById('auto-brightness-checkbox').onclick = autoBrightnessChecked;
 
+        document.getElementById('gallery-button').onclick = openGallery;
+
+
         // Event handlers for socket.io
         const socket = io();
         socket.on('feature-update', onFeatureUpdate);
@@ -284,6 +287,11 @@
                 console.log('Error while capturing photo: ' + error.message);
             });
     }
+
+    function openGallery() {
+       window.location.href = 'photogallery.html'; 
+    }
+
 
     function showLatestPhoto(photoImage) {
         const apiUrl = '/api/photos/latest';
