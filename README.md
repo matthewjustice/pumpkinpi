@@ -115,7 +115,7 @@ This project makes its functionality available with a web UI and a web API. If y
 ## Authors
 
 - **Matthew Justice** [matthewjustice](https://github.com/matthewjustice)
-- **Ivy Justice** 
+- **Ivy Justice** [IvyJustice](https://github.com/IvyJustice)
 
 See also the list of [contributors](https://github.com/matthewjustice/pumpkinpi/contributors) who participated in this project.
 
