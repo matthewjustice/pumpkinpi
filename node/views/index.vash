@@ -29,7 +29,9 @@
 
     <div class="groupBox">
         <button id="photo-button">Take Photo</button>
-        <img src="/images/initial-photo.png" id="photo-image">
+        <a href="/images/initial-photo.png" id="photo-link">
+            <img src="/images/initial-photo.png" id="photo-image">
+        </a>
         <button id="gallery-button">See all photos!</button>
     </div>
 
