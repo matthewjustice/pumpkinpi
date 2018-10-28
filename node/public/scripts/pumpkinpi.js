@@ -11,7 +11,7 @@
         addSoundsToMenu(document.getElementById('sounds-select'));
 
         // Show latest image
-        showLatestPhoto(document.getElementById('photo-image'));
+        showLatestPhoto(document.getElementById('photo-image'), document.getElementById('photo-link'));
 
         // Show initial status
         getLedsStatus();
@@ -291,7 +291,7 @@
         window.location.href = 'photogallery.html';
     }
 
-    function showLatestPhoto(photoImage) {
+    function showLatestPhoto(photoImage, photoLink) {
         const apiUrl = '/api/photos/latest';
         console.log('GET ' + apiUrl);
 
@@ -308,6 +308,7 @@
                 console.log('latest photo: ' + JSON.stringify(photo));
                 // Set the photo
                 photoImage.src = photo.path;
+                photoLink.href = photo.path;
             })
             .catch(function(error) {
                 console.log('Error while getting latest photo: ' + error.message);
@@ -366,6 +367,8 @@
     function onPhotoUpdate(photo) {
         console.log('photo-update: ' + JSON.stringify(photo));
         const img = document.getElementById('photo-image');
+        const link = document.getElementById('photo-link');
         img.src = photo.path;
+        link.href = photo.path;
     }
 }());

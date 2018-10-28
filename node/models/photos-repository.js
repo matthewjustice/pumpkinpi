@@ -23,7 +23,7 @@ const fswebcam = 'fswebcam';
 
 // Returns the appropriate args for fswebcam
 function getWebcamArgs(pumpkinData, filename) {
-    const args = ['-S', '2', '--set'];
+    const args = ['-S', '2', '--banner-colour=#FF6A00', '--line-colour=#007F0E', '--set'];
     const webcamBrightness = pumpkinData['webcam-brightness'];
     let brightInt;
 
