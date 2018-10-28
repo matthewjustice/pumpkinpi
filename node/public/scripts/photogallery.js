@@ -8,7 +8,7 @@
     });
 
     function addPhotos(container) {
-        const apiUrl = '/api/photos';
+        const apiUrl = '/api/photos?sortOrder=desc';
         console.log('GET ' + apiUrl);
 
         fetch(apiUrl)

@@ -20,7 +20,7 @@ function respond(res, result, error, status) {
 // GET /api/photos
 // Enumerate all photos
 router.get("/", function (req, res) {
-    photosRepository.getAll(req.app.pumpkinData, function (result, error, status) {
+    photosRepository.getAll(req.app.pumpkinData, req.query.sortOrder, function (result, error, status) {
         respond(res, result, error, status);
     });
 });
