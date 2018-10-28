@@ -1,7 +1,7 @@
 // photos-repository.js
-// Defines the photos repository object model for accessing the photos data 
+// Defines the photos repository object model for accessing the photos data
 // stored on the file system.
-// 
+//
 // All repository functions take a callback function:
 //     done (result, error, status)
 //           result = the data to return, if any
@@ -9,22 +9,22 @@
 //           status = the numeric http status code, if any
 
 // private
-const { execFile } = require('child_process');
+const {execFile} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const pathUrlPrefix = '/photos/';
 
-var autoToggleBrightnessValue = 0;
+let autoToggleBrightnessValue = 0;
 
 // Normally, fswebcam should be set to 'fswebcam'.
 const fswebcam = 'fswebcam';
 // For testing purposes, use this:
-//const fswebcam = 'touch';
+// const fswebcam = 'touch';
 
 // Returns the appropriate args for fswebcam
 function getWebcamArgs(pumpkinData, filename) {
-    let args = ['-S', '2', '--set'];
-    let webcamBrightness = pumpkinData['webcam-brightness'];
+    const args = ['-S', '2', '--set'];
+    const webcamBrightness = pumpkinData['webcam-brightness'];
     let brightInt;
 
     // Determine the brightness
@@ -35,17 +35,14 @@ function getWebcamArgs(pumpkinData, filename) {
         args.push('brightness=' + autoToggleBrightnessValue + '%');
 
         // Toggle
-        if(autoToggleBrightnessValue == 0) {
+        if (autoToggleBrightnessValue == 0) {
             autoToggleBrightnessValue = 100;
-        }
-        else {
+        } else {
             autoToggleBrightnessValue = 0;
         }
-    }
-    else if(brightInt = parseInt(webcamBrightness)) {
+    } else if (brightInt = parseInt(webcamBrightness)) {
         args.push('brightness=' + brightInt + '%');
-    }
-    else {
+    } else {
         args.push('brightness=50%');
     }
 
@@ -54,7 +51,7 @@ function getWebcamArgs(pumpkinData, filename) {
     console.log('getWebcamArgs() - args are: ' + args.toString().replace(/,/gi, ' '));
 
     // For testing purposes, use this:
-    //args = [];
+    // args = [];
     return args;
 }
 
@@ -62,42 +59,36 @@ function getWebcamArgs(pumpkinData, filename) {
 // This function can throw if the file can't be accessed.
 function fileNameToPhoto(filename, photosDirectory) {
     // Make sure this is a file and not a directory.
-    let fullPath = path.join(photosDirectory, filename);
-    let stats = fs.statSync(fullPath);
-    if(!stats.isDirectory()) {
-        let photo = {};
+    const fullPath = path.join(photosDirectory, filename);
+    const stats = fs.statSync(fullPath);
+    if (!stats.isDirectory()) {
+        const photo = {};
         photo.id = filename;
         photo.path = path.join(pathUrlPrefix, filename);
         return photo;
-    }
-    else {
+    } else {
         return null;
     }
 }
 
 // Wrapper for fileNameToPhoto with done callback
 function tryFileToPhoto(filename, photosDirectory, capture, done) {
-    try
-    {
-        let photo = fileNameToPhoto(filename, photosDirectory);
-        if(photo) {
+    try {
+        const photo = fileNameToPhoto(filename, photosDirectory);
+        if (photo) {
             done(photo);
+        } else {
+            done(null, 'invalid photo', 404);
         }
-        else {
-            done(null, 'invalid photo', 404)
-        }
-    }
-    catch(err) {
-        // The err object thrown by fs.statSync contains the 
-        // full path to the file. We don't want to return that, 
+    } catch (err) {
+        // The err object thrown by fs.statSync contains the
+        // full path to the file. We don't want to return that,
         // so swallow the error details.
-        if(capture) {
+        if (capture) {
             done(null, 'unable to capture photo', 500);
-        }
-        else if(err.code = 'ENOENT') {
+        } else if (err.code = 'ENOENT') {
             done(null, 'photo ' + filename + ' does not exist', 404);
-        }
-        else {
+        } else {
             done(null, 'unable to access photo ' + filename, 500);
         }
     }
@@ -105,110 +96,102 @@ function tryFileToPhoto(filename, photosDirectory, capture, done) {
 
 // Generates a new filename
 function newPhotoFileName() {
-    let date = new Date(Date.now());
+    const date = new Date(Date.now());
     let filename = date.toISOString(); // returns YYYY-MM-DDTHH:mm:ss.sssZ
     filename = filename.replace(/:/gi, '-');
     return filename + '.jpg';
 }
 
 // public
-var photosRepositoryPublic = {
-    
+const photosRepositoryPublic = {
+
     // Get all the photos as an array of photo objects
-    getAll: function (pumpkinData, done) {
+    getAll: function(pumpkinData, done) {
         fs.readdir(pumpkinData.photosDirectory, (err, files) => {
-            if(err) {
+            if (err) {
                 done(null, err, 500);
-            }
-            else {
+            } else {
                 // Convert file names to photo objects array
-                let photoDataArray = [];
-                for(var i = 0, length = files.length; i < length; i++)
-                {
-                    var file = files[i];
+                const photoDataArray = [];
+                for (let i = 0, length = files.length; i < length; i++) {
+                    const file = files[i];
                     // Only jpg files should be returned.
-                    if(file.endsWith('.jpg')) {
-                        let photo = fileNameToPhoto(file, pumpkinData.photosDirectory);
-                        if(photo) {
+                    if (file.endsWith('.jpg')) {
+                        const photo = fileNameToPhoto(file, pumpkinData.photosDirectory);
+                        if (photo) {
                             photoDataArray.push(photo);
                         }
                     }
                 }
                 done(photoDataArray);
             }
-          });
+        });
     },
 
-    get: function (id, pumpkinData, done) {
+    get: function(id, pumpkinData, done) {
         tryFileToPhoto(id, pumpkinData.photosDirectory, false, done);
     },
 
     // Get the most recent photo
     getLatest(pumpkinData, done) {
         fs.readdir(pumpkinData.photosDirectory, (err, files) => {
-            if(err) {
+            if (err) {
                 done(null, err, 500);
-            }
-            else {
-                if(!files || files.length === 0) {
+            } else {
+                if (!files || files.length === 0) {
                     // There are no photo files.
                     done(null, 'no photos have been captured', 404);
-                }
-                else {
+                } else {
                     // Get rid of non-jpg files
-                    let jpgFiles = [];
-                    for(var i = 0, length = files.length; i < length; i++)
-                    {
-                        var file = files[i];
+                    const jpgFiles = [];
+                    for (let i = 0, length = files.length; i < length; i++) {
+                        const file = files[i];
                         // Only jpg files should be returned.
-                        if(file.endsWith('.jpg')) {
+                        if (file.endsWith('.jpg')) {
                             jpgFiles.push(file);
                         }
                     }
 
                     // Do we still have at least one file?
-                    if(!jpgFiles || jpgFiles.length === 0) {
+                    if (!jpgFiles || jpgFiles.length === 0) {
                         // There are no photo files.
                         done(null, 'no photos have been captured', 404);
-                    }
-                    else {
+                    } else {
                         // Order our files array by newest file
                         jpgFiles.sort(function(a, b) {
-                            return fs.statSync(path.join(pumpkinData.photosDirectory, b)).mtime.getTime() - 
-                            fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime();
+                            return fs.statSync(path.join(pumpkinData.photosDirectory, b)).mtime.getTime() -
+                                fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime();
                         });
 
                         tryFileToPhoto(jpgFiles[0], pumpkinData.photosDirectory, false, done);
                     }
                 }
             }
-          });
+        });
     },
 
     // Capture a new photo
-    capture: function (pumpkinData, io, done)
-    {
-        let filename = newPhotoFileName();
-        let fullPath = path.join(pumpkinData.photosDirectory, filename);
+    capture: function(pumpkinData, io, done) {
+        const filename = newPhotoFileName();
+        const fullPath = path.join(pumpkinData.photosDirectory, filename);
         console.log('Capturing new photo to ' + fullPath);
 
-        let args = getWebcamArgs(pumpkinData, fullPath);
+        const args = getWebcamArgs(pumpkinData, fullPath);
 
         execFile(fswebcam, args, (error, stdout, stderr) => {
-            if(error) {
+            if (error) {
                 console.log('fswebcam error: ' + error);
                 done(null, 'unable to capture photo', 500);
-            }
-            else {
+            } else {
                 console.log('fswebcam stdout: ' + stdout);
                 console.log('fswebcam stderr: ' + stderr);
 
                 // fswebcam doesn't set an error exit code on failure, and it always
-                // writes to stderr, even on a succesful run. So, we can't reply 
+                // writes to stderr, even on a succesful run. So, we can't reply
                 // on error or stderr as indicators of success. Instead, we'll just see
                 // if fileNameToPhoto throws an error.
                 tryFileToPhoto(filename, pumpkinData.photosDirectory, true, (result, error, status) => {
-                    if(!error) {
+                    if (!error) {
                         console.log('socket.io: photo-update ' + JSON.stringify(result));
                         io.sockets.emit('photo-update', result);
                     }
@@ -217,6 +200,6 @@ var photosRepositoryPublic = {
             }
         });
     }
-}
+};
 
 module.exports = photosRepositoryPublic;
