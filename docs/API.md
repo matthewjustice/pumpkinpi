@@ -420,7 +420,10 @@ Returns the collection of all photo data as JSON.
   
 *  **URL Params**
 
-   None
+    Optional<br />
+   `sortOrder=desc`<br />
+   or<br />
+   `sortOrder=asc`
 
 * **Data Params**
 

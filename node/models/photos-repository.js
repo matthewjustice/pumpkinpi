@@ -102,25 +102,68 @@ function newPhotoFileName() {
     return filename + '.jpg';
 }
 
+function getAllPhotoFilenames(pumpkinData, sortOrder, complete) {
+    fs.readdir(pumpkinData.photosDirectory, (err, files) => {
+        if (err) {
+            complete(null);
+        } else {
+            if (!files || files.length === 0) {
+                // There are no photo files.
+                complete(null);
+            } else {
+                // Get rid of non-jpg files
+                const jpgFiles = [];
+                for (let i = 0, length = files.length; i < length; i++) {
+                    const file = files[i];
+                    // Only jpg files should be returned.
+                    if (file.endsWith('.jpg')) {
+                        jpgFiles.push(file);
+                    }
+                }
+                // Sort if needed
+                if (!sortOrder|| !jpgFiles || jpgFiles.length < 2) {
+                    // No sort order requested, or we don't have at least 2 files,
+                    // so there's nothing to sort anyway.
+                    complete(jpgFiles);
+                } else if (sortOrder === 'desc') {
+                    // Order our array by newest file first
+                    jpgFiles.sort(function(a, b) {
+                        return fs.statSync(path.join(pumpkinData.photosDirectory, b)).mtime.getTime() -
+                            fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime();
+                    });
+                    complete(jpgFiles);
+                } else if (sortOrder === 'asc') {
+                    // Order our array by oldest file first
+                    jpgFiles.sort(function(a, b) {
+                        return fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime() -
+                            fs.statSync(path.join(pumpkinData.photosDirectory, b)).mtime.getTime();
+                    });
+                    complete(jpgFiles);
+                } else {
+                    // Invalid sort order
+                    complete(null);
+                }
+            }
+        }
+    });
+}
+
 // public
 const photosRepositoryPublic = {
 
     // Get all the photos as an array of photo objects
-    getAll: function(pumpkinData, done) {
-        fs.readdir(pumpkinData.photosDirectory, (err, files) => {
-            if (err) {
-                done(null, err, 500);
+    getAll: function(pumpkinData, sortOrder, done) {
+        getAllPhotoFilenames(pumpkinData, sortOrder, (files) => {
+            if (!files) {
+                done(null, 'Unable to get photo data', 500);
             } else {
                 // Convert file names to photo objects array
                 const photoDataArray = [];
                 for (let i = 0, length = files.length; i < length; i++) {
                     const file = files[i];
-                    // Only jpg files should be returned.
-                    if (file.endsWith('.jpg')) {
-                        const photo = fileNameToPhoto(file, pumpkinData.photosDirectory);
-                        if (photo) {
-                            photoDataArray.push(photo);
-                        }
+                    const photo = fileNameToPhoto(file, pumpkinData.photosDirectory);
+                    if (photo) {
+                        photoDataArray.push(photo);
                     }
                 }
                 done(photoDataArray);
@@ -134,38 +177,14 @@ const photosRepositoryPublic = {
 
     // Get the most recent photo
     getLatest(pumpkinData, done) {
-        fs.readdir(pumpkinData.photosDirectory, (err, files) => {
-            if (err) {
-                done(null, err, 500);
+        getAllPhotoFilenames(pumpkinData, 'desc', (files) => {
+            if (!files) {
+                done(null, 'Unable to get photo data', 500);
+            } else if (!files || files.length === 0) {
+                // There are no photo files.
+                done(null, 'no photos have been captured', 404);
             } else {
-                if (!files || files.length === 0) {
-                    // There are no photo files.
-                    done(null, 'no photos have been captured', 404);
-                } else {
-                    // Get rid of non-jpg files
-                    const jpgFiles = [];
-                    for (let i = 0, length = files.length; i < length; i++) {
-                        const file = files[i];
-                        // Only jpg files should be returned.
-                        if (file.endsWith('.jpg')) {
-                            jpgFiles.push(file);
-                        }
-                    }
-
-                    // Do we still have at least one file?
-                    if (!jpgFiles || jpgFiles.length === 0) {
-                        // There are no photo files.
-                        done(null, 'no photos have been captured', 404);
-                    } else {
-                        // Order our files array by newest file
-                        jpgFiles.sort(function(a, b) {
-                            return fs.statSync(path.join(pumpkinData.photosDirectory, b)).mtime.getTime() -
-                                fs.statSync(path.join(pumpkinData.photosDirectory, a)).mtime.getTime();
-                        });
-
-                        tryFileToPhoto(jpgFiles[0], pumpkinData.photosDirectory, false, done);
-                    }
-                }
+                tryFileToPhoto(files[0], pumpkinData.photosDirectory, false, done);
             }
         });
     },
