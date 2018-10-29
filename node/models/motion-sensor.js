@@ -58,7 +58,7 @@ function motionSensorPublic(pumpkinData, io) {
             }, 2000);
 
             // Capture a photo
-            photosRepository.capture(pumpkinData, io, false, (result, error) => {
+            photosRepository.capture(pumpkinData, io, true, (result, error) => {
                 console.log('Photo capture result = ' + JSON.stringify(result) + ' error = ' + error);
             });
         }

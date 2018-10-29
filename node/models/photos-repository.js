@@ -193,30 +193,30 @@ const photosRepositoryPublic = {
     },
 
     // Capture a new photo
-    capture: function(pumpkinData, io, playSound, done) {
+    capture: function(pumpkinData, io, silent, done) {
         const filename = newPhotoFileName();
         const fullPath = path.join(pumpkinData.photosDirectory, filename);
         console.log('Capturing new photo to ' + fullPath);
 
-        // Play the smile sound so the user knows a photo is being taken
-        if (playSound) {
+        if (!silent) {
+            // If not silent, play the smile sound and turn on the LEDS
+            // so the user knows a photo is being taken
             soundsRepository.play('smile.wav', pumpkinData, function(result, error, status) {
                 console.log('Play sound smile.wav complete.');
                 console.log('   result = ' + JSON.stringify(result) + ' error = ' + error);
             });
-        }
 
-        // Turn on the LEDs too
-        ledsRepository.updateAllLeds('on', pumpkinData, io, (result, error) => {
-            console.log('LED ON result = ' + JSON.stringify(result) + ' error = ' + error);
-        });
-
-        // Set a timer to turn off the LEDs shortly.
-        setTimeout(() => {
-            ledsRepository.updateAllLeds('off', pumpkinData, io, (result, error) => {
-                console.log('LED OFF result = ' + JSON.stringify(result) + ' error = ' + error);
+            ledsRepository.updateAllLeds('on', pumpkinData, io, (result, error) => {
+                console.log('LED ON result = ' + JSON.stringify(result) + ' error = ' + error);
             });
-        }, 2000);
+
+            // Set a timer to turn off the LEDs shortly.
+            setTimeout(() => {
+                ledsRepository.updateAllLeds('off', pumpkinData, io, (result, error) => {
+                    console.log('LED OFF result = ' + JSON.stringify(result) + ' error = ' + error);
+                });
+            }, 2000);
+        }
 
         const args = getWebcamArgs(pumpkinData, fullPath);
 

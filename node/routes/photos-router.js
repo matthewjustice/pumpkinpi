@@ -44,7 +44,7 @@ router.get('/:id', function(req, res) {
 // POST /api/photos
 // Requests that a photo be captured on the Pumpkin Pi.
 router.post('/', function(req, res) {
-    photosRepository.capture(req.app.pumpkinData, req.app.io, true, function(result, error, status) {
+    photosRepository.capture(req.app.pumpkinData, req.app.io, false, function(result, error, status) {
         respond(res, result, error, status);
     });
 });
