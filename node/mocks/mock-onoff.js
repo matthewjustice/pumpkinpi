@@ -1,4 +1,6 @@
-"use strict";
+// mock-onff.js
+// Provides a mock version of the OnOff Gpio class
+'use strict';
 
 class MockGpio {
     constructor(gpio, direction, edge, options) {
@@ -17,7 +19,7 @@ class MockGpio {
 
     watch(callback) {
         console.log('Mock GPIO: watch ' + this._gpio);
-        let timeout = setInterval(() => {
+        const timeout = setInterval(() => {
             callback(null, 1);
         }, 5000);
 
@@ -26,9 +28,8 @@ class MockGpio {
 
     unwatchAll() {
         console.log('Mock GPIO: unwatchAll ' + this._gpio);
-        for(var i = 0, length = this._timeout.length; i < length; i++)
-        {
-            var timeout = this._timeout[i];
+        for (let i = 0, length = this._timeout.length; i < length; i++) {
+            const timeout = this._timeout[i];
             clearInterval(timeout);
         }
     }

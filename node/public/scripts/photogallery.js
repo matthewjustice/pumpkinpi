@@ -4,7 +4,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         // This runs when the page finishes loading
         addPhotos(document.getElementById('photos-container'));
-    
     });
 
     function addPhotos(container) {
@@ -33,5 +32,4 @@
                 console.log('Error while getting photos: ' + error.message);
             });
     }
-
 }());

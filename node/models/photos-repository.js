@@ -7,6 +7,7 @@
 //           result = the data to return, if any
 //           error  = any error string, if any
 //           status = the numeric http status code, if any
+'use strict';
 
 // private
 const {execFile} = require('child_process');

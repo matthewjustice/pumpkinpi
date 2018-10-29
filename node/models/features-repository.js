@@ -1,73 +1,72 @@
 // features-repository.js
-// Defines the feature repository object model for accessing the feature data 
+// Defines the feature repository object model for accessing the feature data
 // initially stored in a JSON file - features.json,
 // that defines our feature data as a dictionary of string id to feature object
-// 
+//
 // All repository functions take a callback function:
 //     done (result, error, status)
 //           result = the data to return, if any
 //           error  = any error string, if any
 //           status = the numeric http status code, if any
+'use strict';
 
 // private
-var featuresData = require("../data/features.json");
+const featuresData = require('../data/features.json');
 
 // public
-var featuresRepositoryPublic = {
-    
+const featuresRepositoryPublic = {
+
     // Get all the features as an array of feature objects
-    getAll: function (done) {
+    getAll: function(done) {
         // flatten dictionary to array
         // and add derived properties
-        var featureArray = [];
-        for (var id in featuresData) {
+        const featureArray = [];
+        for (const id in featuresData) {
             if (featuresData.hasOwnProperty(id)) {
-                var feature = featuresData[id];
+                const feature = featuresData[id];
                 feature.id = id;
                 featureArray.push(feature);
             }
         }
         done(featureArray);
     },
-    
+
     // Get a single feature by id
-    get: function (id, done) {
+    get: function(id, done) {
         try {
-            var feature = featuresData[id.toLowerCase()];
+            const feature = featuresData[id.toLowerCase()];
             if (feature) {
                 // Add derived properties
                 feature.id = id;
                 done(feature);
             } else {
-                done(null, "feature " + id + " does not exist", 404);
+                done(null, 'feature ' + id + ' does not exist', 404);
             }
-        }
-        catch (err) {
+        } catch (err) {
             done(null, err, 500);
         }
     },
 
     // Update a single feature by id
-    update: function (id, updatedfeature, pumpkinData, io, done)
-    {
+    update: function(id, updatedfeature, pumpkinData, io, done) {
         try {
-            var feature = featuresData[id.toLowerCase()];
+            const feature = featuresData[id.toLowerCase()];
             if (feature) {
                 // Add derived properties
                 feature.id = id;
 
                 // Currently only motion-sensor supports the enabled property
-                if(updatedfeature.hasOwnProperty('enabled')) {
+                if (updatedfeature.hasOwnProperty('enabled')) {
                     // update details (only allow boolean values)
-                    if(updatedfeature.enabled) {
+                    if (updatedfeature.enabled) {
                         feature.enabled = true;
                     } else {
                         feature.enabled = false;
                     }
 
                     // Update pumpkin data
-                    var pumpkinProperty = id + '-enabled';
-                    if(pumpkinData.hasOwnProperty(pumpkinProperty)) {
+                    const pumpkinProperty = id + '-enabled';
+                    if (pumpkinData.hasOwnProperty(pumpkinProperty)) {
                         pumpkinData[pumpkinProperty] = feature.enabled;
                         io.sockets.emit('feature-update', feature);
                         console.log('Update feature: ' + pumpkinProperty + ' is ' + feature.enabled);
@@ -75,41 +74,38 @@ var featuresRepositoryPublic = {
                 }
 
                 // Currently only webcam supports the enabled property
-                if(updatedfeature.hasOwnProperty('brightness')) {
-                    let pumpkinProperty = id + '-brightness';
+                if (updatedfeature.hasOwnProperty('brightness')) {
+                    const pumpkinProperty = id + '-brightness';
                     let brightInt;
                     let validInput = false;
 
-                    if(updatedfeature.brightness === 'auto-toggle') {
+                    if (updatedfeature.brightness === 'auto-toggle') {
                         pumpkinData[pumpkinProperty] = 'auto-toggle';
                         feature.brightness = 'auto-toggle';
                         console.log('set brightness to auto-toggle');
                         validInput = true;
-                    }
-                    else if((brightInt = parseInt(updatedfeature.brightness)) != NaN) {
+                    } else if (!isNaN(brightInt = parseInt(updatedfeature.brightness))) {
                         pumpkinData[pumpkinProperty] = brightInt;
                         feature.brightness = brightInt;
                         console.log('set brightness to ' + brightInt);
                         validInput = true;
-                    }
-                    else {
+                    } else {
                         console.log(updatedfeature.brightness + ' is not a valid brightness value');
                     }
 
-                    if(validInput) {
+                    if (validInput) {
                         io.sockets.emit('feature-update', feature);
                     }
                 }
 
                 done(feature);
             } else {
-                done(null, "feature " + id + " does not exist", 404);
+                done(null, 'feature ' + id + ' does not exist', 404);
             }
-        }
-        catch (err) {
+        } catch (err) {
             done(null, err, 500);
         }
     }
-}
+};
 
 module.exports = featuresRepositoryPublic;
