@@ -5,7 +5,6 @@
 // private
 let soundsCounter = 0;
 let sounds = null;
-let leds = null;
 const soundsRepository = require('../models/sounds-repository');
 const ledsRepository = require('../models/leds-repository');
 const photosRepository = require('../models/photos-repository');
@@ -14,13 +13,6 @@ const photosRepository = require('../models/photos-repository');
 soundsRepository.getAll(function(result, error, status) {
     if (!error) {
         sounds = result;
-    }
-});
-
-// Get all the leds and save them to leds array
-ledsRepository.getAll(function(result, error, status) {
-    if (!error) {
-        leds = result;
     }
 });
 
@@ -34,18 +26,6 @@ function playNextSound(pumpkinData) {
 
         if (++soundsCounter === sounds.length) {
             soundsCounter = 0;
-        }
-    }
-}
-
-// Update all the LEDs, status is either 'on' or 'off'
-function updateAllLeds(status, pumpkinData, io) {
-    if (leds && leds.length > 0) {
-        for (let i = 0, length = leds.length; i < length; i++) {
-            ledsRepository.update(leds[i].id, {status: status}, pumpkinData, io, function(result, error, status) {
-                console.log('LED ON ' + leds[i].id + ' complete.');
-                console.log('   result = ' + JSON.stringify(result) + ' error = ' + error);
-            });
         }
     }
 }
@@ -66,17 +46,21 @@ function motionSensorPublic(pumpkinData, io) {
             playNextSound(pumpkinData);
 
             // Turn LEDs on
-            updateAllLeds('on', pumpkinData, io);
-
-            // Capture a photo
-            photosRepository.capture(pumpkinData, io, (result, error) => {
-                console.log('Photo capture result = ' + JSON.stringify(result) + ' error = ' + error);
+            ledsRepository.updateAllLeds('on', pumpkinData, io, (result, error) => {
+                console.log('LED ON result = ' + JSON.stringify(result) + ' error = ' + error);
             });
 
             // Set a timer to turn off the LEDs shortly.
             setTimeout(() => {
-                updateAllLeds('off', pumpkinData, io);
+                ledsRepository.updateAllLeds('off', pumpkinData, io, (result, error) => {
+                    console.log('LED OFF result = ' + JSON.stringify(result) + ' error = ' + error);
+                });
             }, 2000);
+
+            // Capture a photo
+            photosRepository.capture(pumpkinData, io, false, (result, error) => {
+                console.log('Photo capture result = ' + JSON.stringify(result) + ' error = ' + error);
+            });
         }
     };
 

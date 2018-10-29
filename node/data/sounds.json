@@ -10,5 +10,8 @@
     },
     "candy.wav": {
       "title": "Take some candy."
-    }
+    },
+    "smile.wav": {
+      "title": "Smile!"
+    }   
 }

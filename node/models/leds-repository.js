@@ -76,6 +76,19 @@ const ledsRepositoryPublic = {
         } catch (err) {
             done(null, err, 500);
         }
+    },
+
+    // Update all the LEDs, status is either 'on' or 'off'
+    updateAllLeds: function(status, pumpkinData, io, done) {
+        this.getAll((leds, error) => {
+            if (!error) {
+                if (leds && leds.length > 0) {
+                    for (let i = 0, length = leds.length; i < length; i++) {
+                        this.update(leds[i].id, {status: status}, pumpkinData, io, done);
+                    }
+                }
+            }
+        });
     }
 };
 

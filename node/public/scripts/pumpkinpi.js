@@ -264,6 +264,9 @@
                     const option = document.createElement('option');
                     option.value = sounds[i].id;
                     option.innerHTML = sounds[i].title;
+                    if (i === 0) {
+                        option.selected = true;
+                    }
                     selectBox.appendChild(option);
                 }
             })
