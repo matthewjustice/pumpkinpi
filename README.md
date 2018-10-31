@@ -32,7 +32,7 @@ Assembling the hardware:
 ![PumpkinPi wiring diagram](docs/pumpkinpi_wiring_diagram.png)
 
 
-![PumpkinPi assembled](docs/pumpkinpi-assembled.jpg?raw=true)
+![PumpkinPi assembled](docs/pumpkinpi_annotated_small.png?raw=true)
 
 ### Prerequisites
 
